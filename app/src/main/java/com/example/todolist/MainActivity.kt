@@ -5,7 +5,9 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -26,7 +28,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -82,30 +86,48 @@ fun MainContentScreen() {
     Scaffold(
         topBar = { MyHeader() }
     ) { innerPadding ->
-        Column(
+        Box(
             modifier = Modifier
-                .padding(innerPadding)
+                .padding(innerPadding) // Aplica el padding del Scaffold aquí al Box
                 .fillMaxSize()
-                .padding(16.dp), // Add some padding around the content
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center // Center content vertically too
         ) {
-            Text(
-                text ="Bienvenido a DragonStats, la app en donde podrás ver los resultados de la DragonsLeague, presiona el botón para continuar.",
-                fontSize = 20.sp,
-                color = Color.White,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.padding(bottom = 24.dp)
+            // Imagen de fondo
+            Image(
+                painter = painterResource(id = R.drawable.mesi), // Reemplaza con tu imagen
+                contentDescription = "Imagen de fondo", // Descripción para accesibilidad
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop // O ContentScale.FillBounds, ContentScale.Fit, etc. según necesites
             )
 
-            Button(
-                onClick = { Toast.makeText(context, "No existen resultados de la Liga T-T", Toast.LENGTH_LONG).show() },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(red = 13, green = 113, blue = 50), // Your custom background color
-                    contentColor = Color.White
-                )
+            // Contenido principal (tu Column existente)
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp), // Padding interno para el contenido
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
             ) {
-                Text("Ver resultados de la Liga")
+                Text(
+                    text = "Bienvenido a DragonStats, la app en donde podrás ver los resultados de la DragonsLeague, presiona el botón para continuar.",
+                    fontSize = 20.sp,
+                    color = Color.White, // Asegúrate de que el color del texto contraste bien con la imagen
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(bottom = 24.dp)
+                )
+
+                Button(
+                    onClick = { Toast.makeText(context, "No existen resultados de la Liga T-T", Toast.LENGTH_LONG).show() },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(red = 13, green = 113, blue = 50),
+                        contentColor = Color.White
+                    )
+                ) {
+                    Text("Ver resultados de la Liga")
+                }
+
+                // Aquí es donde eventualmente agregarías tu lista de tareas (LazyColumn, etc.)
+                // Por ejemplo:
+                // LazyColumn(modifier = Modifier.weight(1f)) { /* Items de la lista */ }
             }
         }
     }
