@@ -20,7 +20,7 @@ Haciendo uso de Kotlin y Jetpack Compose se desarrolló un programa simple con u
 
 ## Video
 
-
+Enlace al video de funcionamiento: https://youtube.com/shorts/AY76CLx2wyY?si=n_1_JCYJH-0zr906
 
 ### ✅Requisitos
 1. Versión más reciente de Android Studio
