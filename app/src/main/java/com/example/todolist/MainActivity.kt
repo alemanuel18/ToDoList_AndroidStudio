@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -38,10 +39,15 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.todolist.ui.theme.TodoListTheme
+import com.example.myapplication.R
+import com.example.myapplication.ui.theme.TodoListTheme
 import kotlinx.coroutines.delay
+
+// Data class para manejar las tareas
+data class Task(val text: String, val isCompleted: Boolean = false)
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,12 +55,10 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             TodoListTheme {
-                // Estado para controlar si se muestra la splash screen o el contenido principal
                 var showSplashScreen by remember { mutableStateOf(true) }
 
-                // Efecto para cambiar el estado después de un tiempo
                 LaunchedEffect(Unit) {
-                    delay(3000) // Muestra la splash screen por 3 segundos (3000 milisegundos)
+                    delay(3000)
                     showSplashScreen = false
                 }
 
@@ -71,9 +75,9 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun SplashScreen(modifier: Modifier = Modifier) {
     Column(
-        modifier = modifier.fillMaxSize(), // Ocupa_todo el espacio disponible
-        verticalArrangement = Arrangement.Center, // Centra verticalmente
-        horizontalAlignment = Alignment.CenterHorizontally // Centra horizontalmente
+        modifier = modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
             text = "Todo List",
@@ -86,10 +90,10 @@ fun SplashScreen(modifier: Modifier = Modifier) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainContentScreen() {
-    val context = LocalContext.current // Get the current context for Toast
+    val context = LocalContext.current
 
-    // Estado de la lista y del texto de nueva tarea
-    val lista = remember { mutableStateListOf<String>() }
+    // Cambiado a lista de Task objects
+    val taskList = remember { mutableStateListOf<Task>() }
     var newTask by remember { mutableStateOf("") }
 
     Scaffold(
@@ -100,10 +104,9 @@ fun MainContentScreen() {
                 .padding(innerPadding)
                 .fillMaxSize()
         ) {
-            // Imagen de fondo
             Image(
                 painter = painterResource(id = R.drawable.messi),
-                contentDescription = "Imagen de fondo", 
+                contentDescription = "Imagen de fondo",
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Crop
             )
@@ -115,7 +118,7 @@ fun MainContentScreen() {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                // Campo de texto con label
+
                 androidx.compose.material3.OutlinedTextField(
                     value = newTask,
                     onValueChange = { newTask = it },
@@ -125,7 +128,6 @@ fun MainContentScreen() {
                         .padding(bottom = 8.dp)
                 )
 
-                // Botón para agregar tarea
                 Button(
                     onClick = {
                         if (newTask.trim().isEmpty()) {
@@ -135,7 +137,7 @@ fun MainContentScreen() {
                                 Toast.LENGTH_SHORT
                             ).show()
                         } else {
-                            lista.add(newTask.trim())
+                            taskList.add(Task(newTask.trim()))
                             newTask = ""
                         }
                     },
@@ -150,8 +152,61 @@ fun MainContentScreen() {
                     Text("Agregar tarea")
                 }
 
-                // Lista de tareas
-                SimpleLazyColumn(lista)
+                // Pasamos la lista y una función para toggle
+                SimpleLazyColumn(
+                    tasks = taskList,
+                    onToggleTask = { index ->
+                        val task = taskList[index]
+                        taskList[index] = task.copy(isCompleted = !task.isCompleted)
+                    }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun SimpleLazyColumn(
+    tasks: List<Task>,
+    onToggleTask: (Int) -> Unit
+) {
+    LazyColumn(
+        modifier = Modifier.padding(16.dp)
+    ) {
+        itemsIndexed(tasks) { index, task ->
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp)
+                    .background(
+                        if (task.isCompleted) Color.Gray.copy(alpha = 0.2f)
+                        else Color.Red.copy(alpha = 0.2f)
+                    ),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                BasicText(
+                    text = if (task.isCompleted) "✅ ${task.text}" else task.text,
+                    style = androidx.compose.ui.text.TextStyle(
+                        color = if (task.isCompleted) Color.Gray else Color.Black,
+                        fontSize = 18.sp
+                    ),
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(end = 8.dp)
+                )
+
+                Button(
+                    onClick = { onToggleTask(index) },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = if (task.isCompleted) Color.Red else Color.Green
+                    )
+                ) {
+                    Text(
+                        text = if (task.isCompleted) "Desmarcar" else "Completar",
+                        color = Color.White
+                    )
+                }
             }
         }
     }
@@ -174,46 +229,4 @@ fun MyHeader(modifier: Modifier = Modifier) {
         ),
         modifier = modifier
     )
-}
-
-@Composable
-fun SimpleLazyColumn(items:List<String>) {
-    var items by remember { mutableStateOf(items.map { it to false }) }
-
-    LazyColumn(
-        modifier = Modifier
-            .padding(16.dp)
-    ) {
-        items(items) { (text, isCompleted) ->
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp)
-                    .background(
-                        if (isCompleted) Color.Gray.copy(alpha = 0.2f)
-                        else Color.Red.copy(alpha=0.2f)
-                    ),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                BasicText(
-                    text = if (isCompleted) "✅ $text" else text,
-                    // Aquí se aplican los estilos de texto
-                    style = androidx.compose.ui.text.TextStyle(
-                        color = if (isCompleted) Color.Gray else Color.White,
-                        fontSize = 18.sp // Define el tamaño del texto
-                    ),
-                    modifier = Modifier.weight(1f).padding(end = 8.dp) // Permite que el texto ocupe el espacio y añade padding al final
-                )
-                Button(onClick = {
-                    items = items.map {
-                        if (it.first == text) it.copy(second = !it.second) else
-                            it.copy(second = false)
-                    }
-                }) {
-                    Text(if (isCompleted) "Desmarcar" else "Completar")
-                }
-            }
-        }
-    }
 }
