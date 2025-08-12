@@ -157,7 +157,6 @@ fun SimpleLazyColumn(items:List<String>) {
 
     LazyColumn(
         modifier = Modifier
-            .fillMaxSize()
             .padding(16.dp)
     ) {
         items(items) { (text, isCompleted) ->
@@ -185,10 +184,11 @@ fun SimpleLazyColumn(items:List<String>) {
                 )
                 Button(onClick = {
                     items = items.map {
-                        if (it.first == text) it.copy(second = true) else it
+                        if (it.first == text) it.copy(second = !it.second) else
+                            it.copy(second = false)
                     }
                 }) {
-                    Text("Completar")
+                    Text(if (isCompleted) "Desmarcar" else "Completar")
                 }
             }
         }
