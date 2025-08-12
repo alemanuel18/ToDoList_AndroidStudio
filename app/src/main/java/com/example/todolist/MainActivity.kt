@@ -9,9 +9,13 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.BasicText
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -22,6 +26,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -37,6 +42,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.todolist.ui.theme.TodoListTheme
 import kotlinx.coroutines.delay
+
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -107,13 +114,8 @@ fun MainContentScreen() {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                Text(
-                    text = "Bienvenido a DragonStats, la app en donde podrás ver los resultados de la DragonsLeague, presiona el botón para continuar.",
-                    fontSize = 20.sp,
-                    color = Color.White, // Asegúrate de que el color del texto contraste bien con la imagen
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(bottom = 24.dp)
-                )
+                val lista = remember { mutableStateListOf<String>("potato", "tomato", "carrot") }
+                SimpleLazyColumn(lista)
 
                 Button(
                     onClick = { Toast.makeText(context, "No existen resultados de la Liga T-T", Toast.LENGTH_LONG).show() },
@@ -124,10 +126,6 @@ fun MainContentScreen() {
                 ) {
                     Text("Ver resultados de la Liga")
                 }
-
-                // Aquí es donde eventualmente agregarías tu lista de tareas (LazyColumn, etc.)
-                // Por ejemplo:
-                // LazyColumn(modifier = Modifier.weight(1f)) { /* Items de la lista */ }
             }
         }
     }
@@ -150,4 +148,44 @@ fun MyHeader(modifier: Modifier = Modifier) {
         ),
         modifier = modifier
     )
+}
+
+@Composable
+fun SimpleLazyColumn(items:List<String>) {
+    var items by remember { mutableStateOf(items.map { it to false }) }
+
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
+        items(items) { (text, isCompleted) ->
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                BasicText(
+                    text = if (isCompleted) "✅ $text" else text,
+                    // Aquí aplicas los estilos al texto
+                    style = androidx.compose.ui.text.TextStyle(
+                        color = if (isCompleted) Color.Gray else Color.White, // Cambia el color si está completado
+                        fontSize = 18.sp // Define el tamaño del texto
+                        // Puedes añadir más estilos aquí, como fontWeight, fontStyle, etc.
+                        // fontWeight = FontWeight.Bold
+                    ),
+                    modifier = Modifier.weight(1f).padding(end = 8.dp) // Permite que el texto ocupe el espacio y añade padding al final
+                )
+                Button(onClick = {
+                    items = items.map {
+                        if (it.first == text) it.copy(second = true) else it
+                    }
+                }) {
+                    Text("Completar")
+                }
+            }
+        }
+    }
 }
