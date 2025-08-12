@@ -115,18 +115,47 @@ fun MainContentScreen() {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                val lista = remember { mutableStateListOf<String>("potato", "tomato", "carrot") }
-                SimpleLazyColumn(lista)
+                // Estado de la lista y del texto de nueva tarea
+                val lista = remember { mutableStateListOf("potato", "tomato", "carrot") }
+                var newTask by remember { mutableStateOf("") }
 
+                // Campo de texto con label
+                androidx.compose.material3.OutlinedTextField(
+                    value = newTask,
+                    onValueChange = { newTask = it },
+                    label = { Text("Nueva tarea") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 8.dp)
+                )
+
+                // Botón para agregar tarea
                 Button(
-                    onClick = { Toast.makeText(context, "No existen resultados de la Liga T-T", Toast.LENGTH_LONG).show() },
+                    onClick = {
+                        if (newTask.trim().isEmpty()) {
+                            Toast.makeText(
+                                context,
+                                "El campo está vacío. Escribe una tarea.",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        } else {
+                            lista.add(newTask.trim())
+                            newTask = ""
+                        }
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 16.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(red = 13, green = 113, blue = 50),
+                        containerColor = Color(0xFF0D7132),
                         contentColor = Color.White
                     )
                 ) {
-                    Text("Ver resultados de la Liga")
+                    Text("Agregar tarea")
                 }
+
+                // Lista de tareas
+                SimpleLazyColumn(lista)
             }
         }
     }
