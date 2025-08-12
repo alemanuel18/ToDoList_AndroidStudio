@@ -42,8 +42,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.myapplication.R
-import com.example.myapplication.ui.theme.TodoListTheme
+import com.example.todolist.R
+import com.example.todolist.ui.theme.TodoListTheme
 import kotlinx.coroutines.delay
 
 // Data class para manejar las tareas
@@ -82,7 +82,7 @@ fun SplashScreen(modifier: Modifier = Modifier) {
         Text(
             text = "Todo List",
             fontSize = 50.sp,
-            color = Color(red = 0, green = 120, blue = 212)
+            color = Color(0xFF0D7132)
         )
     }
 }
@@ -188,7 +188,7 @@ fun SimpleLazyColumn(
                 BasicText(
                     text = if (task.isCompleted) "✅ ${task.text}" else task.text,
                     style = androidx.compose.ui.text.TextStyle(
-                        color = if (task.isCompleted) Color.Gray else Color.Black,
+                        color = if (task.isCompleted) Color.Gray else Color.White,
                         fontSize = 18.sp
                     ),
                     modifier = Modifier
@@ -199,7 +199,7 @@ fun SimpleLazyColumn(
                 Button(
                     onClick = { onToggleTask(index) },
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = if (task.isCompleted) Color.Red else Color.Green
+                        containerColor = if (task.isCompleted) Color.Red else Color(0xFF0D7132)
                     )
                 ) {
                     Text(
@@ -225,7 +225,7 @@ fun MyHeader(modifier: Modifier = Modifier) {
             )
         },
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = Color(red = 0, green = 120, blue = 212)
+            containerColor = Color(0xFF0D7132)
         ),
         modifier = modifier
     )
