@@ -44,8 +44,6 @@ import androidx.compose.ui.unit.sp
 import com.example.todolist.ui.theme.TodoListTheme
 import kotlinx.coroutines.delay
 
-
-
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -91,34 +89,33 @@ fun SplashScreen(modifier: Modifier = Modifier) {
 fun MainContentScreen() {
     val context = LocalContext.current // Get the current context for Toast
 
+    // Estado de la lista y del texto de nueva tarea
+    val lista = remember { mutableStateListOf<String>() }
+    var newTask by remember { mutableStateOf("") }
+
     Scaffold(
         topBar = { MyHeader() }
     ) { innerPadding ->
         Box(
             modifier = Modifier
-                .padding(innerPadding) // Aplica el padding del Scaffold aquí al Box
+                .padding(innerPadding)
                 .fillMaxSize()
         ) {
             // Imagen de fondo
             Image(
-                painter = painterResource(id = R.drawable.mesi), // Reemplaza con tu imagen
-                contentDescription = "Imagen de fondo", // Descripción para accesibilidad
+                painter = painterResource(id = R.drawable.mesi),
+                contentDescription = "Imagen de fondo", 
                 modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop // O ContentScale.FillBounds, ContentScale.Fit, etc. según necesites
+                contentScale = ContentScale.Crop
             )
 
-            // Contenido principal (tu Column existente)
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(16.dp), // Padding interno para el contenido
+                    .padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                // Estado de la lista y del texto de nueva tarea
-                val lista = remember { mutableStateListOf("potato", "tomato", "carrot") }
-                var newTask by remember { mutableStateOf("") }
-
                 // Campo de texto con label
                 androidx.compose.material3.OutlinedTextField(
                     value = newTask,
@@ -202,12 +199,10 @@ fun SimpleLazyColumn(items:List<String>) {
             ) {
                 BasicText(
                     text = if (isCompleted) "✅ $text" else text,
-                    // Aquí aplicas los estilos al texto
+                    // Aquí se aplican los estilos de texto
                     style = androidx.compose.ui.text.TextStyle(
-                        color = if (isCompleted) Color.Gray else Color.White, // Cambia el color si está completado
+                        color = if (isCompleted) Color.Gray else Color.White,
                         fontSize = 18.sp // Define el tamaño del texto
-                        // Puedes añadir más estilos aquí, como fontWeight, fontStyle, etc.
-                        // fontWeight = FontWeight.Bold
                     ),
                     modifier = Modifier.weight(1f).padding(end = 8.dp) // Permite que el texto ocupe el espacio y añade padding al final
                 )
